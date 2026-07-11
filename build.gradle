@@ -1,5 +1,7 @@
 plugins {
     id "dev.kikugie.stonecutter" version "0.9.6" apply false
+    id "net.fabricmc.fabric-loom" version "1.17.14" apply false
+    id "net.minecraftforge.gradle" version "[7.0.17,8)" apply false
 }
 
 apply from: "stonecutter.gradle"
@@ -15,6 +17,26 @@ allprojects {
 
 subprojects {
     apply plugin: "java-library"
+
+    repositories {
+        mavenCentral()
+        maven {
+            name = "MojangLibraries"
+            url = uri("https://libraries.minecraft.net/")
+        }
+        maven {
+            name = "Fabric"
+            url = uri("https://maven.fabricmc.net/")
+        }
+        maven {
+            name = "MinecraftForge"
+            url = uri("https://maven.minecraftforge.net/")
+        }
+        maven {
+            name = "ParchmentMC"
+            url = uri("https://maven.parchmentmc.org")
+        }
+    }
 
     java {
         toolchain {

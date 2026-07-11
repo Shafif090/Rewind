@@ -1,5 +1,77 @@
+plugins {
+    id "net.minecraftforge.gradle"
+}
+
 description = "Forge loader integration for Rewind."
 
+base {
+    archivesName = "${providers.gradleProperty("archives_base_name").get()}-forge"
+}
+
+minecraft {
+    runs {
+        configureEach {
+            workingDir = layout.projectDirectory.dir("run")
+            systemProperty "eventbus.api.strictRuntimeChecks", "true"
+        }
+
+        register("client")
+
+        register("server") {
+            args "--nogui"
+        }
+    }
+}
+
+configurations.configureEach {
+    if (name.endsWith("Classpath")) {
+        attributes {
+            attribute(
+                LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE,
+                objects.named(LibraryElements, LibraryElements.JAR)
+            )
+        }
+    }
+}
+
 dependencies {
+    implementation minecraft.dependency("net.minecraftforge:forge:${providers.gradleProperty("forge_version").get()}")
+    compileOnly files(
+        rootProject.layout.projectDirectory.file(".gradle/mavenizer/repo/net/minecraftforge/forge/${providers.gradleProperty("forge_version").get()}/forge-${providers.gradleProperty("forge_version").get()}.jar"),
+        new File(gradle.gradleUserHomeDir, "caches/minecraftforge/forgegradle/mavenizer/caches/maven/forge/net/minecraftforge/javafmllanguage/${providers.gradleProperty("forge_version").get()}/javafmllanguage-${providers.gradleProperty("forge_version").get()}.jar"),
+        new File(gradle.gradleUserHomeDir, "caches/minecraftforge/forgegradle/mavenizer/caches/maven/forge/net/minecraftforge/fmlloader/${providers.gradleProperty("forge_version").get()}/fmlloader-${providers.gradleProperty("forge_version").get()}.jar"),
+        new File(gradle.gradleUserHomeDir, "caches/minecraftforge/forgegradle/mavenizer/caches/maven/forge/net/minecraftforge/eventbus/7.0.1/eventbus-7.0.1.jar"),
+        new File(gradle.gradleUserHomeDir, "caches/minecraftforge/forgegradle/mavenizer/caches/maven/forge/net/minecraftforge/mergetool-api/1.0/mergetool-api-1.0.jar")
+    )
+    compileOnly "org.jspecify:jspecify:1.0.0"
+    compileOnly "com.mojang:brigadier:1.3.10"
+    compileOnly "com.mojang:datafixerupper:10.0.21"
+    compileOnly "it.unimi.dsi:fastutil:8.5.18"
+    compileOnly "io.netty:netty-buffer:4.2.15.Final"
+    compileOnly "io.netty:netty-common:4.2.15.Final"
+    compileOnly "org.apache.commons:commons-lang3:3.20.0"
+
     implementation project(":common")
+}
+
+sourceSets.main.resources {
+    srcDir "src/generated/resources"
+}
+
+processResources {
+    inputs.property "mod_id", providers.gradleProperty("mod_id")
+    inputs.property "mod_name", providers.gradleProperty("mod_name")
+    inputs.property "mod_version", providers.gradleProperty("mod_version")
+    inputs.property "minecraft_version", providers.gradleProperty("minecraft_version")
+    inputs.property "forge_loader_version", providers.gradleProperty("forge_loader_version")
+
+    filesMatching("META-INF/mods.toml") {
+        expand(
+            mod_id: providers.gradleProperty("mod_id").get(),
+            mod_name: providers.gradleProperty("mod_name").get(),
+            mod_version: providers.gradleProperty("mod_version").get(),
+            minecraft_version: providers.gradleProperty("minecraft_version").get(),
+            forge_loader_version: providers.gradleProperty("forge_loader_version").get()
+        )
+    }
 }

@@ -1,5 +1,44 @@
+plugins {
+    id "net.fabricmc.fabric-loom"
+}
+
 description = "Fabric loader integration for Rewind."
 
+base {
+    archivesName = "${providers.gradleProperty("archives_base_name").get()}-fabric"
+}
+
 dependencies {
+    minecraft "com.mojang:minecraft:${providers.gradleProperty("minecraft_version").get()}"
+    implementation "net.fabricmc:fabric-loader:${providers.gradleProperty("fabric_loader_version").get()}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${providers.gradleProperty("fabric_api_version").get()}"
+
     implementation project(":common")
+}
+
+loom {
+    mods {
+        rewind {
+            sourceSet sourceSets.main
+            sourceSet project(":common").sourceSets.main
+        }
+    }
+}
+
+processResources {
+    inputs.property "mod_id", providers.gradleProperty("mod_id")
+    inputs.property "mod_name", providers.gradleProperty("mod_name")
+    inputs.property "mod_version", providers.gradleProperty("mod_version")
+    inputs.property "minecraft_version", providers.gradleProperty("minecraft_version")
+    inputs.property "fabric_loader_version", providers.gradleProperty("fabric_loader_version")
+
+    filesMatching("fabric.mod.json") {
+        expand(
+            mod_id: providers.gradleProperty("mod_id").get(),
+            mod_name: providers.gradleProperty("mod_name").get(),
+            mod_version: providers.gradleProperty("mod_version").get(),
+            minecraft_version: providers.gradleProperty("minecraft_version").get(),
+            fabric_loader_version: providers.gradleProperty("fabric_loader_version").get()
+        )
+    }
 }

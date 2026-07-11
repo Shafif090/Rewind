@@ -3,6 +3,10 @@ pluginManagement {
         gradlePluginPortal()
         mavenCentral()
         maven {
+            name = "MojangLibraries"
+            url = uri("https://libraries.minecraft.net/")
+        }
+        maven {
             name = "Kikugie"
             url = uri("https://maven.kikugie.dev/releases")
         }
@@ -14,6 +18,10 @@ pluginManagement {
             name = "MinecraftForge"
             url = uri("https://maven.minecraftforge.net/")
         }
+        maven {
+            name = "ParchmentMC"
+            url = uri("https://maven.parchmentmc.org")
+        }
     }
 }
 
@@ -22,9 +30,13 @@ plugins {
 }
 
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
     repositories {
         mavenCentral()
+        maven {
+            name = "MojangLibraries"
+            url = uri("https://libraries.minecraft.net/")
+        }
         gradlePluginPortal()
         maven {
             name = "Kikugie"
@@ -37,6 +49,10 @@ dependencyResolutionManagement {
         maven {
             name = "MinecraftForge"
             url = uri("https://maven.minecraftforge.net/")
+        }
+        maven {
+            name = "ParchmentMC"
+            url = uri("https://maven.parchmentmc.org")
         }
     }
 }

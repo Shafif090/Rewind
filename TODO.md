@@ -37,13 +37,13 @@ This plan is meant to be executed one step at a time. Fabric and Forge are requi
 
 ## Phase 3 - Server-Side Undo Flow
 
-- [ ] Ensure undo requests execute on the server.
-- [ ] Add client-to-server undo request packet for Fabric.
-- [ ] Add client-to-server undo request packet for Forge.
-- [ ] Register `Ctrl + Z` keybinding on Fabric client.
-- [ ] Register `Ctrl + Z` keybinding on Forge client.
-- [ ] Show action bar messages from server result.
-- [ ] Refuse undo without popping history when `canUndo()` fails.
+- [x] Ensure undo requests execute on the server.
+- [x] Add client-to-server undo request packet for Fabric.
+- [x] Add client-to-server undo request packet for Forge.
+- [x] Register `Ctrl + Z` keybinding on Fabric client.
+- [x] Register `Ctrl + Z` keybinding on Forge client.
+- [x] Show action bar messages from server result.
+- [x] Refuse undo without popping history when `canUndo()` fails.
 
 ## Phase 4 - Action Recording
 
