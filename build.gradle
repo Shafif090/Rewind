@@ -1,0 +1,35 @@
+plugins {
+    id "dev.kikugie.stonecutter" version "0.9.6" apply false
+}
+
+apply from: "stonecutter.gradle"
+
+def targetJava = providers.gradleProperty("java_version")
+    .map { it as int }
+    .getOrElse(25)
+
+allprojects {
+    group = providers.gradleProperty("maven_group").get()
+    version = providers.gradleProperty("mod_version").get()
+}
+
+subprojects {
+    apply plugin: "java-library"
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(targetJava)
+        }
+        withSourcesJar()
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = "UTF-8"
+        options.release = targetJava
+    }
+
+    tasks.withType(Jar).configureEach {
+        reproducibleFileOrder = true
+        preserveFileTimestamps = false
+    }
+}

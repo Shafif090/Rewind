@@ -1,0 +1,5 @@
+description = "Forge loader integration for Rewind."
+
+dependencies {
+    implementation project(":common")
+}

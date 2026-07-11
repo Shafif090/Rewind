@@ -1,0 +1,48 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+        maven {
+            name = "Kikugie"
+            url = uri("https://maven.kikugie.dev/releases")
+        }
+        maven {
+            name = "Fabric"
+            url = uri("https://maven.fabricmc.net/")
+        }
+        maven {
+            name = "MinecraftForge"
+            url = uri("https://maven.minecraftforge.net/")
+        }
+    }
+}
+
+plugins {
+    id "org.gradle.toolchains.foojay-resolver-convention" version "1.0.0"
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+        maven {
+            name = "Kikugie"
+            url = uri("https://maven.kikugie.dev/releases")
+        }
+        maven {
+            name = "Fabric"
+            url = uri("https://maven.fabricmc.net/")
+        }
+        maven {
+            name = "MinecraftForge"
+            url = uri("https://maven.minecraftforge.net/")
+        }
+    }
+}
+
+rootProject.name = "Rewind"
+
+include "common"
+include "fabric"
+include "forge"

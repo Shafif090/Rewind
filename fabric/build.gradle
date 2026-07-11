@@ -1,0 +1,5 @@
+description = "Fabric loader integration for Rewind."
+
+dependencies {
+    implementation project(":common")
+}

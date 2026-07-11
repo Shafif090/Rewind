@@ -1,0 +1,10 @@
+Prompt.md
+TODO.md
+
+.gradle/
+build/
+out/
+*.log
+*.iml
+.idea/
+.vscode/

@@ -1,0 +1,17 @@
+ext {
+    minecraftTargetVersion = "26.2"
+    requiredLoaders = ["fabric", "forge"]
+    optionalLoaders = ["neoforge"]
+
+    stonecutterBranches = [
+        "26.2-fabric": [
+            minecraft: "26.2",
+            loader   : "fabric"
+        ],
+        "26.2-forge": [
+            minecraft: "26.2",
+            loader   : "forge"
+        ]
+    ]
+}
+
