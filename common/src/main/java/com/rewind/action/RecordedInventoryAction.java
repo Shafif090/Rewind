@@ -10,9 +10,6 @@ import java.util.Objects;
 
 /**
  * Immutable action record produced by the common transaction recorder.
- *
- * <p>Concrete slot-restoration logic is added by the action implementation phase. Until then,
- * recorded actions fail closed so a detected action can never duplicate or recreate items.</p>
  */
 public record RecordedInventoryAction(
     InventoryActionKind kind,
@@ -27,11 +24,38 @@ public record RecordedInventoryAction(
 
     @Override
     public boolean canUndo(UndoContext context) {
-        return false;
+        return delegate().canUndo(context);
     }
 
     @Override
     public UndoResult undo(UndoContext context) {
-        return UndoResult.refusedWorldChanged();
+        return delegate().undo(context);
+    }
+
+    private InventoryAction delegate() {
+        return switch (kind) {
+            case MOVE -> new MoveAction(deltas, description);
+            case SWAP -> new SwapAction(deltas, description);
+            case SHIFT_CLICK -> new ShiftClickAction(deltas, description);
+            case HOTBAR_SWAP -> new HotbarSwapAction(deltas, description);
+            case PICKUP -> new PickupAction(deltas, description);
+            case DROP -> new DropAction(deltas, description);
+            case SORT -> new InventoryAction() {
+                @Override
+                public boolean canUndo(UndoContext context) {
+                    return false;
+                }
+
+                @Override
+                public UndoResult undo(UndoContext context) {
+                    return UndoResult.refusedWorldChanged();
+                }
+
+                @Override
+                public String description() {
+                    return description;
+                }
+            };
+        };
     }
 }

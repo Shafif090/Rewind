@@ -3,8 +3,11 @@ package com.rewind.fabric;
 import com.rewind.platform.EntityLookup;
 import com.rewind.platform.InventoryAccess;
 import com.rewind.platform.PlayerMessenger;
+import com.rewind.capture.SlotState;
+import com.rewind.capture.StackFingerprint;
 import com.rewind.undo.UndoContext;
 import com.rewind.undo.UndoController;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -32,6 +35,31 @@ public final class RewindFabricServerUndo {
             }
 
             @Override
+            public boolean matches(int slotIndex, SlotState expected) {
+                ItemStack current = player.getInventory().getItem(slotIndex);
+                if (expected.isEmpty()) {
+                    return current.isEmpty();
+                }
+                return current.getCount() == expected.count()
+                    && fingerprint(current).equals(expected.stack());
+            }
+
+            @Override
+            public Object emptyStack() {
+                return ItemStack.EMPTY;
+            }
+
+            @Override
+            public Object copyStackWithCount(Object stack, int count) {
+                if (!(stack instanceof ItemStack itemStack) || count < 0) {
+                    return null;
+                }
+                ItemStack copy = itemStack.copy();
+                copy.setCount(count);
+                return copy;
+            }
+
+            @Override
             public boolean tryPlace(int slotIndex, Object stack) {
                 if (!(stack instanceof ItemStack itemStack)) {
                     return false;
@@ -55,5 +83,13 @@ public final class RewindFabricServerUndo {
             entityLookup,
             inventoryAccess
         );
+    }
+
+    private static StackFingerprint fingerprint(ItemStack stack) {
+        if (stack.isEmpty()) {
+            return StackFingerprint.empty();
+        }
+        String itemKey = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+        return StackFingerprint.of(itemKey, stack.getComponents().toString());
     }
 }

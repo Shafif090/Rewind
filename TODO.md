@@ -60,18 +60,18 @@ This plan is meant to be executed one step at a time. Fabric and Forge are requi
 
 ## Phase 5 - Action Implementations
 
-- [ ] Implement `MoveAction`.
-- [ ] Implement `SwapAction`.
-- [ ] Implement `ShiftClickAction`.
-- [ ] Implement `HotbarSwapAction`.
-- [ ] Implement `PickupAction`.
-- [ ] Implement `DropAction`.
-- [ ] Ensure every action implements:
-  - [ ] `canUndo()`
-  - [ ] `undo()`
-  - [ ] `description()`
-- [ ] Ensure every action refuses with `Cannot undo: world has changed.` when state validation fails.
-- [ ] Ensure no action can duplicate items.
+- [x] Implement `MoveAction`.
+- [x] Implement `SwapAction`.
+- [x] Implement `ShiftClickAction`.
+- [x] Implement `HotbarSwapAction`.
+- [x] Implement `PickupAction`.
+- [x] Implement `DropAction`.
+- [x] Ensure every action implements:
+  - [x] `canUndo()`
+  - [x] `undo()`
+  - [x] `description()`
+- [x] Ensure every action refuses with `Cannot undo: world has changed.` when state validation fails.
+- [x] Ensure no action can duplicate items.
 
 ## Phase 6 - Drop Action Strict Mode
 

@@ -1,5 +1,7 @@
 package com.rewind.platform;
 
+import com.rewind.capture.SlotState;
+
 /**
  * Loader-provided access to the server player's inventory.
  */
@@ -11,6 +13,31 @@ public interface InventoryAccess {
      * @return loader-native stack object, or an empty-stack representation
      */
     Object stackAt(int slotIndex);
+
+    /**
+     * Returns whether the current slot exactly matches a recorded loader-neutral state.
+     *
+     * @param slotIndex server inventory slot index
+     * @param expected recorded expected state
+     * @return true only when item identity, components, and count match
+     */
+    boolean matches(int slotIndex, SlotState expected);
+
+    /**
+     * Creates an empty loader-native stack object.
+     *
+     * @return loader-native empty stack representation
+     */
+    Object emptyStack();
+
+    /**
+     * Copies a loader-native stack with a new count.
+     *
+     * @param stack loader-native stack object to copy
+     * @param count desired item count
+     * @return copied loader-native stack object, or null when the stack cannot be copied
+     */
+    Object copyStackWithCount(Object stack, int count);
 
     /**
      * Attempts to place a stack into a slot without violating vanilla stack rules.

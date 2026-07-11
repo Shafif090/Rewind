@@ -2,6 +2,7 @@ package com.rewind.undo;
 
 import com.rewind.Rewind;
 import com.rewind.action.InventoryAction;
+import com.rewind.capture.SlotState;
 import com.rewind.history.InventoryHistory;
 import com.rewind.platform.EntityLookup;
 import com.rewind.platform.InventoryAccess;
@@ -59,6 +60,21 @@ final class UndoServiceTest {
             @Override
             public Object stackAt(int slotIndex) {
                 return new Object();
+            }
+
+            @Override
+            public boolean matches(int slotIndex, SlotState expected) {
+                return true;
+            }
+
+            @Override
+            public Object emptyStack() {
+                return new Object();
+            }
+
+            @Override
+            public Object copyStackWithCount(Object stack, int count) {
+                return stack;
             }
 
             @Override
