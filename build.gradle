@@ -28,6 +28,10 @@ subprojects {
         options.release = targetJava
     }
 
+    tasks.withType(Test).configureEach {
+        useJUnitPlatform()
+    }
+
     tasks.withType(Jar).configureEach {
         reproducibleFileOrder = true
         preserveFileTimestamps = false
