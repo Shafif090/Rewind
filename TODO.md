@@ -47,16 +47,16 @@ This plan is meant to be executed one step at a time. Fabric and Forge are requi
 
 ## Phase 4 - Action Recording
 
-- [ ] Implement inventory transaction recorder in common.
-- [ ] Capture relevant before/after slot state without saving full inventory snapshots.
-- [ ] Detect moving items between slots.
-- [ ] Detect swapping slots.
-- [ ] Detect shift-click transfers.
-- [ ] Detect number-key hotbar swaps.
-- [ ] Detect item pickup actions.
-- [ ] Detect item drop actions.
-- [ ] Normalize detected changes into `InventoryAction` implementations.
-- [ ] Add strict validation for unexpected inventory changes.
+- [x] Implement inventory transaction recorder in common.
+- [x] Capture relevant before/after slot state without saving full inventory snapshots.
+- [x] Detect moving items between slots.
+- [x] Detect swapping slots.
+- [x] Detect shift-click transfers.
+- [x] Detect number-key hotbar swaps.
+- [x] Detect item pickup actions.
+- [x] Detect item drop actions.
+- [x] Normalize detected changes into `InventoryAction` implementations.
+- [x] Add strict validation for unexpected inventory changes.
 
 ## Phase 5 - Action Implementations
 
