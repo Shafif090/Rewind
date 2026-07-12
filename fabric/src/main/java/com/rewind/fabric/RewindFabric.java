@@ -13,5 +13,6 @@ public final class RewindFabric implements ModInitializer {
     @Override
     public void onInitialize() {
         RewindFabricNetworking.registerServerReceivers();
+        RewindFabricInventoryHooks.register();
     }
 }

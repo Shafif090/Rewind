@@ -90,21 +90,21 @@ This plan is meant to be executed one step at a time. Fabric and Forge are requi
 
 ## Phase 7 - Loader Integration
 
-- [ ] Fabric:
-  - [ ] Add mod metadata.
-  - [ ] Add initializer.
-  - [ ] Register client keybinding.
-  - [ ] Register networking.
-  - [ ] Register inventory/drop/pickup event hooks.
-- [ ] Forge:
-  - [ ] Add mod metadata.
-  - [ ] Add main mod class.
-  - [ ] Register client keybinding.
-  - [ ] Register networking.
-  - [ ] Register inventory/drop/pickup event hooks.
-- [ ] Keep loader-specific classes thin.
-- [ ] Confirm no Fabric APIs appear in `common`.
-- [ ] Confirm no Forge APIs appear in `common`.
+- [x] Fabric:
+  - [x] Add mod metadata.
+  - [x] Add initializer.
+  - [x] Register client keybinding.
+  - [x] Register networking.
+  - [x] Register inventory/drop/pickup event hooks.
+- [x] Forge:
+  - [x] Add mod metadata.
+  - [x] Add main mod class.
+  - [x] Register client keybinding.
+  - [x] Register networking.
+  - [x] Register inventory/drop/pickup event hooks.
+- [x] Keep loader-specific classes thin.
+- [x] Confirm no Fabric APIs appear in `common`.
+- [x] Confirm no Forge APIs appear in `common`.
 
 ## Phase 8 - Testing And Verification
 

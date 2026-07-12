@@ -13,6 +13,7 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 public final class RewindForge {
     public RewindForge() {
         RewindForgeNetworking.registerPayloads();
+        RewindForgeInventoryHooks.register();
 
         if (FMLEnvironment.dist == Dist.CLIENT) {
             RewindForgeClient.register();
