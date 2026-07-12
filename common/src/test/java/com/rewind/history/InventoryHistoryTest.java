@@ -44,6 +44,19 @@ final class InventoryHistoryTest {
         assertThrows(IllegalArgumentException.class, () -> new InventoryHistory(0));
     }
 
+    @Test
+    void defaultHistoryUsesMaxSizeOfOneHundred() {
+        InventoryHistory history = new InventoryHistory();
+
+        for (int index = 0; index < 125; index++) {
+            history.push(action("Action " + index));
+        }
+
+        assertEquals(InventoryHistory.DEFAULT_MAX_SIZE, history.maxSize());
+        assertEquals(InventoryHistory.DEFAULT_MAX_SIZE, history.size());
+        assertEquals("Action 124", history.peek().orElseThrow().description());
+    }
+
     private static InventoryAction action(String description) {
         return new InventoryAction() {
             @Override

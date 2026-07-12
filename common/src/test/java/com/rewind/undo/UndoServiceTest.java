@@ -53,6 +53,28 @@ final class UndoServiceTest {
         assertEquals("Cannot undo: no inventory actions recorded.", messages.getFirst());
     }
 
+    @Test
+    void swapMessageUsesActionDescription() {
+        ArrayList<String> messages = new ArrayList<>();
+        UndoService service = new UndoService(new InventoryHistory());
+        service.record(action(true, UndoResult.success("Swapped Slots"), "Swapped Slots"));
+
+        service.undoLatest(context(messages));
+
+        assertEquals("Undid: Swapped Slots", messages.getFirst());
+    }
+
+    @Test
+    void dropMessageUsesActionDescription() {
+        ArrayList<String> messages = new ArrayList<>();
+        UndoService service = new UndoService(new InventoryHistory());
+        service.record(action(true, UndoResult.success("Dropped Diamond Pickaxe"), "Dropped Diamond Pickaxe"));
+
+        service.undoLatest(context(messages));
+
+        assertEquals("Undid: Dropped Diamond Pickaxe", messages.getFirst());
+    }
+
     private static UndoContext context(ArrayList<String> messages) {
         PlayerMessenger messenger = messages::add;
         EntityLookup entityLookup = entityId -> Optional.empty();

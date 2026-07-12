@@ -108,9 +108,9 @@ This plan is meant to be executed one step at a time. Fabric and Forge are requi
 
 ## Phase 8 - Testing And Verification
 
-- [ ] Add unit tests for history behavior.
-- [ ] Add unit tests for action validation rules.
-- [ ] Add test cases for each supported action.
+- [x] Add unit tests for history behavior.
+- [x] Add unit tests for action validation rules.
+- [x] Add test cases for each supported action.
 - [ ] Manually test Fabric build in dev client.
 - [ ] Manually test Forge build in dev client.
 - [ ] Test undo refusal cases:
