@@ -7,6 +7,7 @@ import com.rewind.undo.UndoResult;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Immutable action record produced by the common transaction recorder.
@@ -30,6 +31,20 @@ public record RecordedInventoryAction(
     @Override
     public UndoResult undo(UndoContext context) {
         return delegate().undo(context);
+    }
+
+    /**
+     * Adds the dropped entity id required for strict drop undo.
+     *
+     * @param droppedEntityId UUID of the dropped item entity produced by this action
+     * @return strict drop action carrying the entity id
+     */
+    public InventoryAction withDroppedEntity(UUID droppedEntityId) {
+        Objects.requireNonNull(droppedEntityId, "droppedEntityId");
+        if (kind != InventoryActionKind.DROP) {
+            throw new IllegalStateException("only drop actions can carry a dropped entity id");
+        }
+        return new DropAction(deltas, description, droppedEntityId);
     }
 
     private InventoryAction delegate() {

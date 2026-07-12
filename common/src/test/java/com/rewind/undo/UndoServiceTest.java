@@ -86,6 +86,11 @@ final class UndoServiceTest {
             public boolean tryMerge(Object stack) {
                 return true;
             }
+
+            @Override
+            public boolean canMerge(Object stack) {
+                return true;
+            }
         };
 
         return new UndoContext(

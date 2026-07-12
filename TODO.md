@@ -75,18 +75,18 @@ This plan is meant to be executed one step at a time. Fabric and Forge are requi
 
 ## Phase 6 - Drop Action Strict Mode
 
-- [ ] Record dropped `ItemEntity` UUID.
-- [ ] Record original slot.
-- [ ] Record original stack identity and count.
-- [ ] On undo, find the dropped entity by UUID.
-- [ ] Verify entity still exists.
-- [ ] Verify entity is not removed or dead.
-- [ ] Verify entity stack still matches recorded stack.
-- [ ] Remove entity only after destination inventory validation succeeds.
-- [ ] Return stack to original slot if possible.
-- [ ] Attempt merge if original slot is occupied.
-- [ ] Fail gracefully if merge is impossible.
-- [ ] Never recreate burned, despawned, or stolen dropped items.
+- [x] Record dropped `ItemEntity` UUID.
+- [x] Record original slot.
+- [x] Record original stack identity and count.
+- [x] On undo, find the dropped entity by UUID.
+- [x] Verify entity still exists.
+- [x] Verify entity is not removed or dead.
+- [x] Verify entity stack still matches recorded stack.
+- [x] Remove entity only after destination inventory validation succeeds.
+- [x] Return stack to original slot if possible.
+- [x] Attempt merge if original slot is occupied.
+- [x] Fail gracefully if merge is impossible.
+- [x] Never recreate burned, despawned, or stolen dropped items.
 
 ## Phase 7 - Loader Integration
 

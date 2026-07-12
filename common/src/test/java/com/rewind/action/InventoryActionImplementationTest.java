@@ -123,7 +123,7 @@ final class InventoryActionImplementationTest {
     }
 
     @Test
-    void dropActionRefusesUntilDroppedEntityValidationExists() {
+    void genericDropActionRefusesWithoutDroppedEntityId() {
         FakeInventory inventory = inventory(stack(0, DIAMOND, 1));
         DropAction action = new DropAction(List.of(
             delta(slot(0, DIAMOND, 2), slot(0, DIAMOND, 1))
@@ -132,6 +132,86 @@ final class InventoryActionImplementationTest {
         assertFalse(action.canUndo(context(inventory)));
         assertEquals(UndoResult.refusedWorldChanged(), action.undo(context(inventory)));
         assertSlot(inventory, slot(0, DIAMOND, 1));
+    }
+
+    @Test
+    void dropUndoRestoresOriginalSlotAndRemovesEntity() {
+        UUID entityId = UUID.randomUUID();
+        FakeInventory inventory = inventory(stack(0, DIAMOND, 1));
+        FakeEntityLookup entities = entities(entityId, stack(-1, DIAMOND, 1));
+        DropAction action = strictDrop(entityId);
+
+        assertTrue(action.canUndo(context(inventory, entities)));
+        assertEquals(UndoResult.Status.SUCCESS, action.undo(context(inventory, entities)).status());
+        assertSlot(inventory, slot(0, DIAMOND, 2));
+        assertTrue(entities.entity(entityId).removed);
+    }
+
+    @Test
+    void dropUndoRefusesWhenEntityIsMissing() {
+        UUID entityId = UUID.randomUUID();
+        FakeInventory inventory = inventory(stack(0, DIAMOND, 1));
+        FakeEntityLookup entities = new FakeEntityLookup();
+        DropAction action = strictDrop(entityId);
+
+        assertFalse(action.canUndo(context(inventory, entities)));
+        assertEquals(UndoResult.refusedWorldChanged(), action.undo(context(inventory, entities)));
+        assertSlot(inventory, slot(0, DIAMOND, 1));
+    }
+
+    @Test
+    void dropUndoRefusesWhenDroppedStackChanged() {
+        UUID entityId = UUID.randomUUID();
+        FakeInventory inventory = inventory(stack(0, DIAMOND, 1));
+        FakeEntityLookup entities = entities(entityId, stack(-1, STONE, 1));
+        DropAction action = strictDrop(entityId);
+
+        assertFalse(action.canUndo(context(inventory, entities)));
+        assertEquals(UndoResult.refusedWorldChanged(), action.undo(context(inventory, entities)));
+        assertSlot(inventory, slot(0, DIAMOND, 1));
+        assertFalse(entities.entity(entityId).removed);
+    }
+
+    @Test
+    void dropUndoRefusesWhenDroppedEntityIsDead() {
+        UUID entityId = UUID.randomUUID();
+        FakeInventory inventory = inventory(stack(0, DIAMOND, 1));
+        FakeEntityLookup entities = entities(entityId, stack(-1, DIAMOND, 1));
+        entities.entity(entityId).alive = false;
+        DropAction action = strictDrop(entityId);
+
+        assertFalse(action.canUndo(context(inventory, entities)));
+        assertEquals(UndoResult.refusedWorldChanged(), action.undo(context(inventory, entities)));
+        assertSlot(inventory, slot(0, DIAMOND, 1));
+        assertFalse(entities.entity(entityId).removed);
+    }
+
+    @Test
+    void dropUndoMergesWhenOriginalSlotIsOccupied() {
+        UUID entityId = UUID.randomUUID();
+        FakeInventory inventory = inventory(stack(0, STONE, 1));
+        FakeEntityLookup entities = entities(entityId, stack(-1, DIAMOND, 1));
+        DropAction action = strictDrop(entityId);
+
+        assertTrue(action.canUndo(context(inventory, entities)));
+        assertEquals(UndoResult.Status.SUCCESS, action.undo(context(inventory, entities)).status());
+        assertSlot(inventory, slot(0, STONE, 1));
+        assertEquals(1, inventory.mergedCount(DIAMOND));
+        assertTrue(entities.entity(entityId).removed);
+    }
+
+    @Test
+    void dropUndoRefusesOccupiedSlotWhenMergeIsImpossible() {
+        UUID entityId = UUID.randomUUID();
+        FakeInventory inventory = inventory(stack(0, STONE, 1));
+        inventory.mergeAllowed = false;
+        FakeEntityLookup entities = entities(entityId, stack(-1, DIAMOND, 1));
+        DropAction action = strictDrop(entityId);
+
+        assertFalse(action.canUndo(context(inventory, entities)));
+        assertEquals(UndoResult.refusedWorldChanged(), action.undo(context(inventory, entities)));
+        assertSlot(inventory, slot(0, STONE, 1));
+        assertFalse(entities.entity(entityId).removed);
     }
 
     @Test
@@ -155,9 +235,12 @@ final class InventoryActionImplementationTest {
     }
 
     private static UndoContext context(FakeInventory inventory) {
+        return context(inventory, new FakeEntityLookup());
+    }
+
+    private static UndoContext context(FakeInventory inventory, EntityLookup entityLookup) {
         PlayerMessenger messenger = message -> {
         };
-        EntityLookup entityLookup = entityId -> Optional.empty();
         return new UndoContext(
             UUID.randomUUID(),
             new Object(),
@@ -167,6 +250,18 @@ final class InventoryActionImplementationTest {
             entityLookup,
             inventory
         );
+    }
+
+    private static DropAction strictDrop(UUID entityId) {
+        return new DropAction(List.of(
+            delta(slot(0, DIAMOND, 2), slot(0, DIAMOND, 1))
+        ), "Dropped Item", entityId);
+    }
+
+    private static FakeEntityLookup entities(UUID entityId, TestStack stack) {
+        FakeEntityLookup lookup = new FakeEntityLookup();
+        lookup.entities.put(entityId, new FakeDroppedItem(stack));
+        return lookup;
     }
 
     private static FakeInventory inventory(TestStack... stacks) {
@@ -217,6 +312,8 @@ final class InventoryActionImplementationTest {
 
     private static final class FakeInventory implements InventoryAccess {
         private final Map<Integer, TestStack> slots = new HashMap<>();
+        private final List<TestStack> merged = new java.util.ArrayList<>();
+        private boolean mergeAllowed = true;
 
         @Override
         public Object stackAt(int slotIndex) {
@@ -256,7 +353,75 @@ final class InventoryActionImplementationTest {
 
         @Override
         public boolean tryMerge(Object stack) {
-            return false;
+            if (!canMerge(stack)) {
+                return false;
+            }
+            merged.add(((TestStack) stack).inSlot(-2));
+            return true;
+        }
+
+        @Override
+        public boolean canMerge(Object stack) {
+            return mergeAllowed && stack instanceof TestStack testStack && !testStack.isEmpty();
+        }
+
+        int mergedCount(StackFingerprint fingerprint) {
+            return merged.stream()
+                .filter(stack -> stack.fingerprint().equals(fingerprint))
+                .mapToInt(TestStack::count)
+                .sum();
+        }
+    }
+
+    private static final class FakeEntityLookup implements EntityLookup {
+        private final Map<UUID, FakeDroppedItem> entities = new HashMap<>();
+
+        @Override
+        public Optional<Object> findEntity(UUID entityId) {
+            return Optional.ofNullable(entities.get(entityId));
+        }
+
+        @Override
+        public boolean isLiveDroppedItem(Object entity) {
+            return entity instanceof FakeDroppedItem item && item.alive && !item.removed && !item.stack.isEmpty();
+        }
+
+        @Override
+        public boolean droppedItemMatches(Object entity, StackFingerprint stack, int count) {
+            return entity instanceof FakeDroppedItem item
+                && item.stack.fingerprint().equals(stack)
+                && item.stack.count() == count;
+        }
+
+        @Override
+        public Optional<Object> copyDroppedItemStack(Object entity) {
+            if (!(entity instanceof FakeDroppedItem item)) {
+                return Optional.empty();
+            }
+            return Optional.of(item.stack);
+        }
+
+        @Override
+        public boolean removeDroppedItem(Object entity) {
+            if (!(entity instanceof FakeDroppedItem item) || item.removed) {
+                return false;
+            }
+            item.removed = true;
+            return true;
+        }
+
+        FakeDroppedItem entity(UUID entityId) {
+            return entities.get(entityId);
+        }
+    }
+
+    private static final class FakeDroppedItem {
+        private final TestStack stack;
+        private boolean alive = true;
+        private boolean removed;
+
+        private FakeDroppedItem(TestStack stack) {
+            this.stack = stack;
         }
     }
 }

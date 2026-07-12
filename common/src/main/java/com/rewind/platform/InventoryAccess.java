@@ -55,4 +55,12 @@ public interface InventoryAccess {
      * @return true when the full stack was merged
      */
     boolean tryMerge(Object stack);
+
+    /**
+     * Returns whether a full stack could currently merge into the player's inventory.
+     *
+     * @param stack loader-native stack object
+     * @return true when a later {@link #tryMerge(Object)} should be able to merge the full stack
+     */
+    boolean canMerge(Object stack);
 }
